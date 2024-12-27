@@ -9,11 +9,10 @@ class AppTheme {
       colorScheme: lightColorScheme,
     );
   }
-  
+
   static ThemeData get dark {
     return ThemeData(
       colorScheme: darkColorScheme,
     );
   }
 }
-

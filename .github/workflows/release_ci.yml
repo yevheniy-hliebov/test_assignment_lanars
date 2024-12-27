@@ -1,0 +1,68 @@
+name: Create release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.27.1"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Build the APK
+        run: flutter build apk --release
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Zip iOS Build
+        run: zip -r build/ios/iphoneos/iOS-build.zip build/ios/iphoneos/Runner.app
+      
+      - name: Upload iOS Build (zipped)
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS Build
+          path: build/ios/iphoneos/iOS-build.zip
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: "Test Assignment LANARS ${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/ios/iphoneos/iOS-build.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

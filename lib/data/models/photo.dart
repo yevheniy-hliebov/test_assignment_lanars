@@ -8,4 +8,12 @@ class Photo {
     required this.photographer,
     required this.alt,
   });
+
+  factory Photo.fromJson(Map<String, dynamic> json) {
+    return Photo(
+      src: json['src']['medium'],
+      photographer: json['photographer'],
+      alt: json['alt'],
+    );
+  }
 }

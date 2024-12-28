@@ -70,7 +70,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           context.router.pushNamed('/main');
         }
       } catch (e) {
-        print(e);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Server error. Please, try again'),
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+              padding: EdgeInsets.all(16),
+            ),
+          );
+        }
       }
 
       emit(LoginSuccessState(

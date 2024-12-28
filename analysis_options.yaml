@@ -1,0 +1,13 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    camel_case_types: true
+    camel_case_extensions: true
+    non_constant_identifier_names: true
+    constant_identifier_names: true
+    directives_ordering: true
+    curly_braces_in_flow_control_structures: true
+    always_declare_return_types: true
+    sort_child_properties_last: true

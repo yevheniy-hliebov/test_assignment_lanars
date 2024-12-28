@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_assignment_lanars/bloc/login/login_event.dart';
 import 'package:test_assignment_lanars/bloc/login/login_state.dart';
 import 'package:test_assignment_lanars/data/repository/auth_repository.dart';
+import 'package:test_assignment_lanars/presentation/router/router.gr.dart';
 import 'package:test_assignment_lanars/utils/validation/validations/email_validation.dart';
 import 'package:test_assignment_lanars/utils/validation/validations/password_validation.dart';
 import 'package:test_assignment_lanars/utils/validation/validator.dart';
@@ -62,12 +63,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       ));
     } else {
       try {
-        await authRepository.getUserProfile({
+        final response = await authRepository.getUserProfile({
           'email': event.email,
           'password': event.password,
         });
         if (context.mounted) {
-          context.router.pushNamed('/main');
+          context.router.push(MainRoute(userProfile: response));
         }
       } catch (e) {
         if (context.mounted) {

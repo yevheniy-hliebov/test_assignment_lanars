@@ -9,6 +9,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i3;
+import 'package:flutter/material.dart' as _i4;
+import 'package:test_assignment_lanars/data/models/user_profile.dart' as _i5;
 import 'package:test_assignment_lanars/presentation/screens/login_screen.dart'
     as _i1;
 import 'package:test_assignment_lanars/presentation/screens/main_screen.dart'
@@ -35,10 +37,17 @@ class LoginRoute extends _i3.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.MainScreen]
-class MainRoute extends _i3.PageRouteInfo<void> {
-  const MainRoute({List<_i3.PageRouteInfo>? children})
-      : super(
+class MainRoute extends _i3.PageRouteInfo<MainRouteArgs> {
+  MainRoute({
+    _i4.Key? key,
+    required _i5.UserProfile userProfile,
+    List<_i3.PageRouteInfo>? children,
+  }) : super(
           MainRoute.name,
+          args: MainRouteArgs(
+            key: key,
+            userProfile: userProfile,
+          ),
           initialChildren: children,
         );
 
@@ -47,7 +56,27 @@ class MainRoute extends _i3.PageRouteInfo<void> {
   static _i3.PageInfo page = _i3.PageInfo(
     name,
     builder: (data) {
-      return const _i2.MainScreen();
+      final args = data.argsAs<MainRouteArgs>();
+      return _i2.MainScreen(
+        key: args.key,
+        userProfile: args.userProfile,
+      );
     },
   );
+}
+
+class MainRouteArgs {
+  const MainRouteArgs({
+    this.key,
+    required this.userProfile,
+  });
+
+  final _i4.Key? key;
+
+  final _i5.UserProfile userProfile;
+
+  @override
+  String toString() {
+    return 'MainRouteArgs{key: $key, userProfile: $userProfile}';
+  }
 }

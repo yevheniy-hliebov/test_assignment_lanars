@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+
 sealed class ThemeEvent {}
 
-final class ToggleThemeEvent extends ThemeEvent {}
+final class ChangeThemeEvent extends ThemeEvent {
+  final ThemeMode selectedThemeMode;
+
+  ChangeThemeEvent({required this.selectedThemeMode});
+}

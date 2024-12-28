@@ -7,24 +7,21 @@
   - Error state resets when the value changes.
   - After successful login, the user is redirected to the home page.
   - Input fields and button are disabled during the request.
-  - User remains logged in until they log out.
 
 ### Profile View
 - **Profile view functionality to see user information in the drawer.**
-    - User avatar is displayed.
-    - Full name of the user is shown.
-    - User's email is displayed.
-    - A tile has been added to open a dialog window to change the theme.
+  - User avatar is displayed.
+  - Full name of the user is shown.
+  - User's email is displayed.
+  - A tile has been added to open a dialog window to change the theme.
 
 ### Photos
 - **Photo feed functionality to find the required photos.**
-    - Pagination has been implemented.
-    - Local sorting by name (ASC).
-    - The list is grouped by name.
-    - UI does not freeze when sorting/grouping large datasets.
+  - Local sorting by name (ASC).
+  - The list is grouped by name.
 
-### Update Photo Feed
-    - There is an option to refresh the feed.
+### Refresh photo list
+  - There is an option to refresh the feed.
 
 ## Used Packages:
 - bloc

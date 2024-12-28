@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_assignment_lanars/bloc/photo/photo_bloc.dart';
+import 'package:test_assignment_lanars/bloc/photo/photo_event.dart';
 import 'package:test_assignment_lanars/bloc/photo/photo_state.dart';
 import 'package:test_assignment_lanars/data/models/photo_group.dart';
 import 'package:test_assignment_lanars/presentation/widgets/group_letter.dart';
@@ -32,23 +33,34 @@ class _ListPhotoGroupsState extends State<ListPhotoGroups> {
           photoGroups = state.photoGroups;
         }
 
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Scrollbar(
-            controller: scrollController,
-            thickness: 3,
-            child: ListView.separated(
-              padding: const EdgeInsets.only(right: 6),
+        return RefreshIndicator(
+          onRefresh: () => _refresh(context),
+          displacement: 5,
+          triggerMode: RefreshIndicatorTriggerMode.onEdge,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Scrollbar(
               controller: scrollController,
-              itemCount: photoGroups.length,
-              itemBuilder: (context, index) =>
-                  _buildGroup(photoGroups[index]),
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              thickness: 3,
+              child: ListView.separated(
+                padding: const EdgeInsets.only(right: 6),
+                controller: scrollController,
+                itemCount: photoGroups.length,
+                itemBuilder: (context, index) =>
+                    _buildGroup(photoGroups[index]),
+                separatorBuilder: (context, index) => const SizedBox(height: 8),
+              ),
             ),
           ),
         );
       },
     );
+  }
+
+  Future<void> _refresh(BuildContext context) async {
+    context.read<PhotoBloc>().add(
+          PhotoRefreshEvent(),
+        );
   }
 
   Row _buildGroup(PhotoGroup photoGroup) {

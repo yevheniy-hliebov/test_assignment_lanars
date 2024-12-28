@@ -15,6 +15,8 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconDrawerButton(),
+        title: Text('List page'),
+        centerTitle: true,
       ),
       drawer: ProfileDrawer(userProfile: userProfile),
     );

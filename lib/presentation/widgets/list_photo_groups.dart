@@ -39,18 +39,24 @@ class _ListPhotoGroupsState extends State<ListPhotoGroups> {
           triggerMode: RefreshIndicatorTriggerMode.onEdge,
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Scrollbar(
-              controller: scrollController,
-              thickness: 3,
-              child: ListView.separated(
-                padding: const EdgeInsets.only(right: 6),
+            child: Builder(builder: (context) {
+              if (photoGroups.isEmpty) {
+                return _buildListEmptyText(context);
+              }
+              return Scrollbar(
                 controller: scrollController,
-                itemCount: photoGroups.length,
-                itemBuilder: (context, index) =>
-                    _buildGroup(photoGroups[index]),
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-              ),
-            ),
+                thickness: 3,
+                child: ListView.separated(
+                  padding: const EdgeInsets.only(right: 6),
+                  controller: scrollController,
+                  itemCount: photoGroups.length,
+                  itemBuilder: (context, index) =>
+                      _buildGroup(photoGroups[index]),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
+                ),
+              );
+            }),
           ),
         );
       },
@@ -61,6 +67,20 @@ class _ListPhotoGroupsState extends State<ListPhotoGroups> {
     context.read<PhotoBloc>().add(
           PhotoRefreshEvent(),
         );
+  }
+
+  Container _buildListEmptyText(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      padding: const EdgeInsets.only(top: 72),
+      child: Text(
+        'List is empty',
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   Row _buildGroup(PhotoGroup photoGroup) {

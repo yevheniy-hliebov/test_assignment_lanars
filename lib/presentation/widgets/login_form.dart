@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:test_assignment_lanars/utils/validation/validations/email_validation.dart';
-import 'package:test_assignment_lanars/utils/validation/validations/password_validation.dart';
-import 'package:test_assignment_lanars/utils/validation/validator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_assignment_lanars/bloc/login/login_bloc.dart';
+import 'package:test_assignment_lanars/bloc/login/login_event.dart';
+import 'package:test_assignment_lanars/bloc/login/login_state.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -11,105 +13,137 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  String? _emailErrorText;
-  String? _passwordErrorText;
+  String? emailErrorText;
+  String? passwordErrorText;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Sign in',
-              style: Theme.of(context).textTheme.headlineLarge,
+      child: BlocConsumer<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state is LoginSuccessState) {
+            if (kDebugMode) {
+              print('Login success: ${state.email}');
+              print('Password: ${state.password}');
+            }
+          }
+        },
+        builder: (context, state) {
+          if (state is LoginErrorState) {
+            emailErrorText = state.emailErrorText;
+            passwordErrorText = state.passwordErrorText;
+          }
+
+          bool isLoading = state is LoginInProgressState;
+
+          return Form(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Sign in',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+                const SizedBox(height: 72),
+                _buildEmailField(context, isLoading),
+                const SizedBox(height: 16),
+                _buildPasswordField(context, isLoading),
+                const SizedBox(height: 24),
+                _buildButtonSubmit(isLoading, context),
+              ],
             ),
-            const SizedBox(height: 72),
-            _buildEmailField(),
-            const SizedBox(height: 16),
-            _buildPasswordField(),
-            const SizedBox(height: 24),
-            _buildSubmitButton(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  TextFormField _buildEmailField() {
+  TextFormField _buildEmailField(BuildContext context, bool isLoading) {
     return TextFormField(
       controller: emailController,
       decoration: InputDecoration(
         labelText: 'Email',
         hintText: 'Enter your email',
         helperText: ' ',
-        errorText: _emailErrorText,
+        errorText: emailErrorText,
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
-      onChanged: (_) => _clearEmailError(),
+      onChanged: (_) => _clearEmailError(context),
+      enabled: !isLoading,
+      textInputAction: TextInputAction.next,
     );
   }
 
-  TextFormField _buildPasswordField() {
+  void _clearEmailError(BuildContext context) {
+    context.read<LoginBloc>().add(
+          LoginChangeEmailEvent(
+            email: emailController.text,
+          ),
+        );
+  }
+
+  TextFormField _buildPasswordField(BuildContext context, bool isLoading) {
     return TextFormField(
       controller: passwordController,
       decoration: InputDecoration(
         labelText: 'Password',
         hintText: 'Enter your password',
         helperText: ' ',
-        errorText: _passwordErrorText,
+        errorText: passwordErrorText,
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
       obscureText: true,
-      onChanged: (_) => _clearPasswordError(),
+      onChanged: (_) => _clearPasswordError(context),
+      enabled: !isLoading,
+      textInputAction: TextInputAction.done,
     );
   }
 
-  SizedBox _buildSubmitButton() {
+  void _clearPasswordError(BuildContext context) {
+    context.read<LoginBloc>().add(
+          LoginChangePasswordEvent(
+            password: emailController.text,
+          ),
+        );
+  }
+
+  SizedBox _buildButtonSubmit(bool isLoading, BuildContext context) {
     return SizedBox(
       width: double.maxFinite,
-      child: FilledButton(
-        style: FilledButton.styleFrom(textStyle: TextStyle(fontSize: 14)),
-        onPressed: onSubmit,
-        child: Text('Log in'),
+      child: IgnorePointer(
+        ignoring: isLoading,
+        child: FilledButton(
+          style: FilledButton.styleFrom(
+            textStyle: TextStyle(fontSize: 14),
+          ),
+          onPressed: () => _onSubmit(context),
+          child: isLoading ? _loader : Text('Log in'),
+        ),
       ),
     );
   }
 
-  void _clearEmailError() {
-    setState(() {
-      _emailErrorText = null;
-    });
+  void _onSubmit(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    context.read<LoginBloc>().add(
+          LoginSubmitEvent(
+            email: emailController.text,
+            password: passwordController.text,
+          ),
+        );
   }
 
-  void _clearPasswordError() {
-    setState(() {
-      _passwordErrorText = null;
-    });
-  }
-
-  void onSubmit() {
-    String? emailErrorText =
-        Validator.applyOne(context, EmailValidation())(emailController.text);
-    String? passwordErrorText = Validator.applyOne(
-        context, PasswordValidation())(passwordController.text);
-
-    setState(() {
-      _emailErrorText = emailErrorText;
-      _passwordErrorText = passwordErrorText;
-    });
-
-    if (_emailErrorText == null && _passwordErrorText == null) {
-      print('email ${emailController.text}');
-      print('password ${passwordController.text}');
-    } else {
-      print('Form is not valid');
-    }
+  Widget get _loader {
+    return SizedBox(
+      width: 24,
+      height: 24,
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+        color: Colors.white,
+      ),
+    );
   }
 }

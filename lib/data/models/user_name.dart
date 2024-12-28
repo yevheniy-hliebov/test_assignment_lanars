@@ -16,4 +16,9 @@ class UserName {
       last: json['last'] ?? '',
     );
   }
+
+  @override
+  String toString() {
+    return '$title $first $last';
+  }
 }

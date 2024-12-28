@@ -6,9 +6,11 @@ part 'photo_repository.g.dart';
 
 @RestApi()
 abstract class PhotoRepository {
-  factory PhotoRepository(Dio dio, {String baseUrl = 'https://api.pexels.com/v1/'}) {
+  factory PhotoRepository(Dio dio,
+      {String baseUrl = 'https://api.pexels.com/v1/'}) {
     dio.options.headers = {
-      'Authorization': 'oAE0vUY1aWn1GwYyL1ex8nFWq74oBkh1MNPq35iRClsIbmc03co5gTdN',
+      'Authorization':
+          'oAE0vUY1aWn1GwYyL1ex8nFWq74oBkh1MNPq35iRClsIbmc03co5gTdN',
     };
     return _PhotoRepository(dio, baseUrl: baseUrl);
   }
@@ -16,7 +18,6 @@ abstract class PhotoRepository {
   @GET('/curated?per_page=50')
   Future<PhotoResponse> getPhotos();
 }
-
 
 class PhotoResponse {
   final List<Photo> photos;
